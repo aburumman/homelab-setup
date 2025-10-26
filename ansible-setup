@@ -1,0 +1,20 @@
+Configuring my Nodes for Automation with Ansible.
+
+# 1.1  Time sync (cluster-safe SSL later)
+sudo apt install -y chrony || sudo apt install -y chrony
+sudo systemctl enable --now chronyd
+
+# 1.2  Firewall – open only what Ansible needs
+sudo dnf install -y firewalld || sudo apt install -y ufw
+# RHEL family
+sudo firewall-cmd --permanent --add-service=ssh
+sudo firewall-cmd --reload
+# Ubuntu
+sudo ufw allow 22/tcp && sudo ufw enable
+
+# 1.3  Create a non-root automation user (skip if you already have one)
+sudo useradd -m -s /bin/bash ansible
+sudo mkdir -p /home/ansible/.ssh
+sudo chmod 700 /home/ansible/.ssh
+sudo chown ansible:ansible /home/ansible/.ssh
+echo "ansible ALL=(ALL) NOPASSWD:ALL" | sudo tee /etc/sudoers.d/ansible
